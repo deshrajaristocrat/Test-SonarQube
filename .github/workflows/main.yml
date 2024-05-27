@@ -1,31 +1,27 @@
-name: SonarQube Analysis
+name: Build
+
 on:
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+ 
 jobs:
-  sonar:
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn clean verify sonar:sonar \
-          -Dsonar.projectKey=your_project_key \
-          -Dsonar.host.url=https://your-sonarqube-server \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-      - name: Send webhook
-        run: |
-          curl -X POST https://your-webhook-endpoint \
-          -H 'Content-Type: application/json' \
-          -H 'X-SONARQUBE-TOKEN: your_webhook_secret' \
-          -d '{"projectKey":"your_project_key","status":"completed"}'
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@v1
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}     
+      # If you wish to fail your job when the Quality Gate is red, uncomment the
+      # following lines. This would typically be used to fail a deployment.
+      # - uses: sonarsource/sonarqube-quality-gate-action@master
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
