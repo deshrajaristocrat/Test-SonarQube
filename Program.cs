@@ -11,7 +11,10 @@ namespace C_Program
         static void Main(string[] args)
         {
             string message = "Hello World!!";
-
+            For(i=0;i<10;i++);
+             {
+                  
+             }
             Console.WriteLine(message);
             Console.ReadLine();
         }
